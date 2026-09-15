@@ -150,10 +150,11 @@ export default function App(){
   useEffect(()=>{ const s=localStorage.getItem("net_login"); if(s){ const d=JSON.parse(s); setIsLogged(true); setIsAdmin(d.isAdmin)}},[])
 
   const login=()=>{
-    if(email.toLowerCase().trim()===ADMIN_EMAIL){ setIsAdmin(true); setIsLogged(true); localStorage.setItem("net_login",JSON.stringify({isAdmin:true})); }
-    else if(pass===STUDENT_PASS){ setIsAdmin(false); setIsLogged(true); localStorage.setItem("net_login",JSON.stringify({isAdmin:false})); }
-    else setErr("Wrong! Admin: vishwakarmaadi00@gmail.com | Students Pass: ugckey01")
+      if(email.toLowerCase().trim()==ADMIN_EMAIL){ setIsAdmin(true); setIsLogged(true); localStorage.setItem("net_login",JSON.stringify({isAdmin:true})); }
+  else if(pass==STUDENT_PASS){ setIsAdmin(false); setIsLogged(true); localStorage.setItem("net_login",JSON.stringify({isAdmin:false})); }
+  else setErr("Wrong credentials! Try again")
   }
+
   const logout=()=>{localStorage.removeItem("net_login"); setIsLogged(false); setIsAdmin(false); setEmail(""); setPass("")}
 
   if(!isLogged){
@@ -161,19 +162,20 @@ export default function App(){
       <div style={{background:"white",padding:28,borderRadius:16,width:"100%",maxWidth:380}}>
         <h2>🔒 UGC NET Hub - Private</h2>
         <p style={{fontSize:13}}>Admin & Students Login</p>
-        <input placeholder="Admin Email (vishwakarmaadi00@gmail.com)" value={email} onChange={e=>setEmail(e.target.value)} style={{width:"100%",padding:10,margin:"8px 0",borderRadius:8,border:"1px solid #ccc"}}/>
-        <input placeholder="Student Password: ugckey01" type="password" value={pass} onChange={e=>setPass(e.target.value)} style={{width:"100%",padding:10,margin:"8px 0",borderRadius:8,border:"1px solid #ccc"}}/>
+        <input placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} style={{width:"100%",padding:10,margin:"8px 0",borderRadius:8,border:"1px solid #ccc"}}/>
+        <input placeholder="Password" type="password" value={pass} onChange={e=>setPass(e.target.value)} style={{width:"100%",padding:10,margin:"8px 0",borderRadius:8,border:"1px solid #ccc"}}/>
         <button onClick={login} style={{width:"100%",padding:12,background:"#2563eb",color:"white",border:"none",borderRadius:8,fontWeight:"bold",marginTop:8}}>Login</button>
         {err && <p style={{color:"red",fontSize:12,marginTop:8}}>{err}</p>}
-        <p style={{fontSize:11,color:"#666",marginTop:12}}>Admin use your gmail | Students use ugckey01</p>
+        <p style={{fontSize:11,color:"#666",marginTop:12}}></p>
       </div>
     </div>
   }
 
   const qs=mcqData[unit]; const q=qs[curr]
+
   return <div style={{padding:16,maxWidth:700,margin:"0 auto",fontFamily:"system-ui"}}>
     <div style={{display:"flex",justifyContent:"space-between"}}><b>{isAdmin?"👑 ADMIN":"🎓 STUDENT"} - {unit}</b><button onClick={logout}>Logout</button></div>
-    {isAdmin && <div style={{background:"#fef3c7",padding:10,borderRadius:8,margin:"10px 0",fontSize:12}}><b>Admin Panel:</b> 110 Qs LIVE | Student Pass: {STUDENT_PASS} | You can edit App.tsx anytime to add more Qs | Total Units: {Object.keys(mcqData).length}</div>}
+    {isAdmin && <div style={{background:"#fef3c7",padding:10,borderRadius:8,margin:"10px 0",fontSize:12}}><b>Admin Panel:</b> 110 Qs LIVE</div>}
     <div style={{display:"flex",gap:5,flexWrap:"wrap",margin:"12px 0"}}>{Object.keys(mcqData).map(u=><button key={u} onClick={()=>{setUnit(u);setCurr(0);setShowAns(false)}} style={{padding:"6px 10px",borderRadius:6,border:"none",background:unit===u?"#2563eb":"#e5e7eb",color:unit===u?"white":"black"}}>{u}</button>)}</div>
     <div style={{border:"1px solid #ddd",padding:16,borderRadius:12}}>
       <p><b>Q{curr+1}. {q.q}</b> {q.tag && <span style={{background:"#dcfce7",fontSize:10,padding:"2px 6px",borderRadius:4,marginLeft:6}}>{q.tag}</span>}</p>
