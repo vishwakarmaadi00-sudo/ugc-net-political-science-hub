@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import HomePage from '../components/HomePage';
-import UnitPage from '../components/UnitPage';
-import Admin from './Admin';
-import { units as mockUnits } from '../data/mockData';
-import { supabase } from '../lib/supabase';
+import HomePage from './components/HomePage';
+import UnitPage from './components/UnitPage';
+import Admin from './pages/Admin';
+import { units as mockUnits } from './data/mockData';
+import { supabase } from './lib/supabase';
 
 function App() {
   const [selectedUnitId, setSelectedUnitId] = useState<number | null>(null);
