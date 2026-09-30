@@ -1,154 +1,33 @@
-import { useState } from 'react';
-import { ArrowLeft, Book, HelpCircle, BarChart3, CheckCircle, XCircle, Bookmark } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { Unit } from '../data/mockData';
+import { useState } from 'react';
 
-type Props = {
-  unit: Unit;
-  onBack: () => void;
-};
+export default function UnitPage({ unit, onBack }: { unit: Unit; onBack: () => void }) {
+  const [tab, setTab] = useState('notes');
+  const [topic, setTopic] = useState(unit?.topics?.[0] || 'Overview');
 
-export default function UnitPage({ unit, onBack }: Props) {
-  const [activeTab, setActiveTab] = useState<'notes' | 'pyqs' | 'analysis'>('notes');
-  const [selectedTopic, setSelectedTopic] = useState<string>(unit.topics[0] || '');
-  const [selectedAns, setSelectedAns] = useState<Record<number, string>>({});
-  const [checked, setChecked] = useState<Record<number, boolean>>({});
-  const [revised, setRevised] = useState<Record<number, boolean>>({});
+  if (!unit) return <div className="p-10 bg-black text-white">Unit not found <button onClick={onBack}>Back</button></div>;
 
   return (
     <div className="min-h-screen bg-[#020617] text-white">
-      <div className="sticky top-0 z-20 bg-slate-950/90 backdrop-blur border-b border-slate-800 px-4 py-3 flex items-center gap-3">
-        <button onClick={onBack} className="w-9 h-9 bg-slate-800 rounded-xl flex items-center justify-center hover:bg-slate-700">
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <div className="flex-1">
-          <p className="text-[11px] text-sky-400 font-bold tracking-widest">UNIT {unit.id}</p>
-          <h1 className="font-bold text-sm sm:text-base truncate">{unit.name}</h1>
-        </div>
-        <span className="text-xs bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full">{unit.pyqCount} PYQs</span>
+      <div className="sticky top-0 bg-slate-950 border-b border-slate-800 p-3 flex items-center gap-3">
+        <button onClick={onBack} className="w-9 h-9 bg-slate-800 rounded-xl flex items-center justify-center"><ArrowLeft className="w-5 h-5"/></button>
+        <div><p className="text-xs text-sky-400">UNIT {unit.id}</p><h1 className="font-bold">{unit.name}</h1></div>
       </div>
-
-      <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Topics Sidebar */}
-        <div className="lg:col-span-1">
-          <h3 className="text-xs text-slate-400 font-bold tracking-widest mb-3">TOPICS IN THIS UNIT</h3>
-          <div className="space-y-2">
-            {unit.topics.map((t, i) => (
-              <button key={i} onClick={() => setSelectedTopic(t)}
-                className={`w-full text-left px-4 py-3 rounded-xl text-sm border transition-all ${selectedTopic === t? 'bg-blue-600 border-blue-500 text-white' : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'}`}>
-                {t}
-              </button>
-            ))}
-          </div>
-          <div className="mt-6 bg-slate-900 border border-slate-800 rounded-xl p-4">
-            <p className="text-xs text-slate-500 mb-1">Current Topic</p>
-            <p className="font-semibold text-sm mb-3">{selectedTopic}</p>
-            <div className="w-full bg-slate-800 h-2 rounded-full mb-2">
-              <div className="bg-blue-500 h-2 rounded-full transition-all" style={{ width: `${unit.mastery}%` }} />
-            </div>
-            <p className="text-xs text-slate-500">{unit.mastery}% Mastery</p>
-            <p className="text-[11px] text-slate-600 mt-2">Official: {unit.officialTitle}</p>
-          </div>
+      <div className="max-w-6xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="space-y-2">
+          <h3 className="text-xs text-slate-500 font-bold">TOPICS</h3>
+          {unit.topics.map((t,i)=><button key={i} onClick={()=>setTopic(t)} className={`w-full text-left p-3 rounded-xl border text-sm ${topic===t?'bg-blue-600 border-blue-500':'bg-slate-900 border-slate-800 text-slate-400'}`}>{t}</button>)}
         </div>
-
-        {/* Main Content */}
         <div className="lg:col-span-3">
-          <div className="flex gap-2 mb-6 bg-slate-900 border border-slate-800 p-1 rounded-xl w-fit">
-            <button onClick={() => setActiveTab('notes')} className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'notes'? 'bg-white text-black' : 'text-slate-400 hover:text-white'}`}>
-              <Book className="w-4 h-4" /> Notes
-            </button>
-            <button onClick={() => setActiveTab('pyqs')} className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'pyqs'? 'bg-white text-black' : 'text-slate-400 hover:text-white'}`}>
-              <HelpCircle className="w-4 h-4" /> PYQs ({unit.pyqs.length})
-            </button>
-            <button onClick={() => setActiveTab('analysis')} className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab === 'analysis'? 'bg-white text-black' : 'text-slate-400 hover:text-white'}`}>
-              <BarChart3 className="w-4 h-4" /> Analysis
-            </button>
+          <div className="flex gap-2 mb-4">
+            <button onClick={()=>setTab('notes')} className={`px-4 py-2 rounded-lg text-sm font-bold ${tab==='notes'?'bg-white text-black':'bg-slate-900 text-slate-400'}`}>Notes</button>
+            <button onClick={()=>setTab('pyqs')} className={`px-4 py-2 rounded-lg text-sm font-bold ${tab==='pyqs'?'bg-white text-black':'bg-slate-900 text-slate-400'}`}>PYQs {unit.pyqs.length}</button>
+            <button onClick={()=>setTab('analysis')} className={`px-4 py-2 rounded-lg text-sm font-bold ${tab==='analysis'?'bg-white text-black':'bg-slate-900 text-slate-400'}`}>Analysis</button>
           </div>
-
-          {activeTab === 'notes' && (
-            <div className="space-y-4">
-              <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-6">
-                <h2 className="text-xl font-bold mb-2">{selectedTopic}</h2>
-                <p className="text-blue-100 text-sm leading-relaxed">{unit.description}</p>
-              </div>
-              {unit.notes.map((note, idx) => (
-                <div key={idx} className="bg-slate-900 border border-slate-800 rounded-xl p-5 flex gap-3 items-start">
-                  <div className="w-7 h-7 bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">{idx + 1}</div>
-                  <p className="text-sm text-slate-300 leading-relaxed flex-1">{note}</p>
-                  <button onClick={() => setRevised({...revised, [idx]:!revised[idx] })}
-                    className={`ml-auto flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center transition-all ${revised[idx]? 'bg-green-500 text-white' : 'bg-slate-800 text-slate-500 hover:text-slate-300'}`}>
-                    <CheckCircle className="w-5 h-5" />
-                  </button>
-                </div>
-              ))}
-              <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 text-xs text-yellow-200/80">
-                These are structured sample notes mapped to official syllabus. Verified content with sources will replace SAMPLE tags before public launch.
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'pyqs' && (
-            <div className="space-y-4">
-              {unit.pyqs.map((q) => {
-                const ans = selectedAns[q.id];
-                const isChecked = checked[q.id];
-                const isCorrect = ans === q.correctAns;
-                return (
-                  <div key={q.id} className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-                    <div className="flex justify-between items-start mb-3">
-                      <span className="text-[11px] px-2.5 py-1 bg-slate-800 text-slate-400 rounded-full">PYQ {q.year || 2023} {q.isSample? '• SAMPLE' : '• VERIFIED'}</span>
-                      <button className="text-slate-500 hover:text-blue-400 p-1"><Bookmark className="w-4 h-4" /></button>
-                    </div>
-                    <p className="font-medium mb-4 text-[15px] leading-relaxed">{q.question}</p>
-                    <div className="grid grid-cols-1 gap-2 mb-4">
-                      {[
-                        { k: 'A', v: q.optionA },
-                        { k: 'B', v: q.optionB },
-                        { k: 'C', v: q.optionC },
-                        { k: 'D', v: q.optionD },
-                      ].map((opt) => (
-                        <button key={opt.k} onClick={() =>!isChecked && setSelectedAns({...selectedAns, [q.id]: opt.k })}
-                          className={`text-left px-4 py-3 rounded-xl border text-sm flex gap-3 transition-all ${ans === opt.k? 'border-blue-500 bg-blue-500/10 text-white' : 'border-slate-800 bg-slate-800/50 text-slate-300 hover:border-slate-700'} ${isChecked && opt.k === q.correctAns? '!border-green-500!bg-green-500/10!text-green-100' : ''} ${isChecked && ans === opt.k &&!isCorrect? '!border-red-500!bg-red-500/10' : ''}`}>
-                          <span className="font-bold">{opt.k}.</span> <span>{opt.v}</span>
-                        </button>
-                      ))}
-                    </div>
-                    {!isChecked? (
-                      <button disabled={!ans} onClick={() => setChecked({...checked, [q.id]: true })}
-                        className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-800 disabled:text-slate-500 text-white rounded-xl py-3 text-sm font-semibold transition-all">Check Answer</button>
-                    ) : (
-                      <div className={`rounded-xl p-4 border ${isCorrect? 'bg-green-500/10 border-green-500/20' : 'bg-red-500/10 border-red-500/20'}`}>
-                        <div className="flex gap-2 items-center mb-2">
-                          {isCorrect? <CheckCircle className="w-5 h-5 text-green-400" /> : <XCircle className="w-5 h-5 text-red-400" />}
-                          <span className={`font-bold text-sm ${isCorrect? 'text-green-300' : 'text-red-300'}`}>{isCorrect? 'Correct!' : `Wrong. Correct is ${q.correctAns}`}</span>
-                        </div>
-                        <p className="text-xs text-slate-400 leading-relaxed">{q.explanation}</p>
-                        <button onClick={() => { const n = {...selectedAns }; n[q.id] = ''; setSelectedAns(n); const c = {...checked }; c[q.id] = false; setChecked(c); }}
-                          className="mt-3 text-xs text-slate-400 hover:text-white underline">Reset</button>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {activeTab === 'analysis' && (
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-              <h3 className="font-bold mb-6">Topic-wise Mastery - {unit.name}</h3>
-              {unit.analysis.map((a, i) => (
-                <div key={i} className="mb-5">
-                  <div className="flex justify-between text-sm mb-2"><span className="text-slate-300">{a.topic}</span><span className="text-blue-400 font-semibold">{a.percentage}%</span></div>
-                  <div className="w-full bg-slate-800 h-2 rounded-full"><div className="bg-blue-500 h-2 rounded-full" style={{ width: `${a.percentage}%` }} /></div>
-                </div>
-              ))}
-              <div className="mt-8 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl">
-                <p className="text-sm text-blue-200">💡 <strong>Focus Next:</strong> {unit.analysis.reduce((prev, curr) => curr.percentage < prev.percentage? curr : prev).topic} - lowest mastery. Revise this topic's notes first.</p>
-              </div>
-              <div className="mt-4 p-4 bg-slate-800/50 border border-slate-700/50 rounded-xl">
-                <p className="text-xs text-slate-500">This will become real analytics once we connect Supabase - your attempts, accuracy, time spent will show here.</p>
-              </div>
-            </div>
-          )}
+          {tab==='notes' && <div className="space-y-3"><div className="bg-blue-600 p-6 rounded-2xl"><h2 className="text-xl font-bold">{topic}</h2><p className="text-sm text-blue-100 mt-2">{unit.description}</p></div>{unit.notes.map((n,i)=><div key={i} className="bg-slate-900 border border-slate-800 p-4 rounded-xl text-sm">{n}</div>)}</div>}
+          {tab==='pyqs' && <div className="space-y-3">{unit.pyqs.length===0?<div className="bg-slate-900 border border-slate-800 p-10 rounded-xl text-center text-slate-500">No PYQs yet for this unit - will add verified PYQs</div>:unit.pyqs.map((q:any)=><div key={q.id} className="bg-slate-900 border border-slate-800 p-5 rounded-xl"><p className="text-sm font-medium mb-3">{q.question}</p><div className="space-y-2">{['A','B','C','D'].map(k=><div key={k} className="p-3 bg-slate-800 rounded-xl text-sm"><b>{k}.</b> {q[`option${k}` as any]}</div>)}</div><p className="text-xs text-green-400 mt-3">Ans: {q.correctAns} - {q.explanation}</p></div>)}</div>}
+          {tab==='analysis' && <div className="bg-slate-900 border border-slate-800 p-6 rounded-xl">{unit.analysis.map((a,i)=><div key={i} className="mb-4"><div className="flex justify-between text-sm mb-1"><span>{a.topic}</span><span>{a.percentage}%</span></div><div className="w-full bg-slate-800 h-2 rounded-full"><div className="bg-blue-500 h-2 rounded-full" style={{width:`${a.percentage}%`}}/></div></div>)}</div>}
         </div>
       </div>
     </div>
