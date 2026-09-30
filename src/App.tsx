@@ -1,10 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import HomePage from './components/HomePage';
 import UnitPage from './components/UnitPage';
-import { units } from './data/mockData';
+import Admin from './pages/Admin';
+import { units as mockUnits } from './data/mockData';
+import { supabase } from './lib/supabase';
 
 function App() {
   const [selectedUnitId, setSelectedUnitId] = useState<number | null>(null);
+  const [units, setUnits] = useState(mockUnits);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    // Check if URL is /admin
+    if (window.location.pathname === '/admin') {
+      setIsAdmin(true);
+    }
+    // Fetch units from Supabase (real data)
+    const fetchUnits = async () => {
+      const { data, error } = await supabase.from('units').select('*').order('id');
+      if (!error && data && data.length > 0) {
+        setUnits(data as any);
+      }
+    };
+    fetchUnits();
+  }, []);
 
   const handleUnitSelect = (id: any) => {
     const numId = Number(id);
@@ -15,6 +34,10 @@ function App() {
   const handleBack = () => {
     setSelectedUnitId(null);
   };
+
+  if (isAdmin) {
+    return <Admin />;
+  }
 
   if (selectedUnitId !== null) {
     const unit = units.find(u => u.id === selectedUnitId);
